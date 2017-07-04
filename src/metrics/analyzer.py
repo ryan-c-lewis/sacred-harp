@@ -34,11 +34,17 @@ class AnalyzerResult:
     def __init__(self, score):
         logging.debug("Creating AnalyzerResult out of score: " + str(score))
         self.score = score
-        self.title = score.metadata.title
+        self.raw_title = score.metadata.title
         self.composer = score.metadata.composer
         self.key = score.analyze('key')
         self.range = score.analyze('range')
         self.parts = list(score.parts)
+
+        # Assuming title format is "SONG NAME, PAGE #"
+        self.song_name = self.raw_title[:self.raw_title.rfind(',')].strip()
+        self.page_number = self.raw_title[self.raw_title.rfind(',')+1:].strip()
+        if sum(c.isdigit() for c in self.page_number) == 2: # If page # is between 10 and 99
+            self.page_number = '0' + self.page_number
 
 
 class AnalyzerResultSet:
@@ -48,9 +54,10 @@ class AnalyzerResultSet:
 
     def get_pretty_results(self):
         pretty_results = []
-        for result in self.results:
+        for result in sorted(self.results, key=lambda x: x.page_number):
             pretty_results.append({
-                'Title': result.title,
+                'Page #': result.page_number,
+                'Song Name': result.song_name,
                 'Composer': result.composer,
                 'Tonic': result.key.tonic,
                 'Mode': result.key.mode,
