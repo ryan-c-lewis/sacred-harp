@@ -1,5 +1,5 @@
 lib/*
-metrics/output/*
+out/*
 
 # PyCharm files
 **/.idea/*
