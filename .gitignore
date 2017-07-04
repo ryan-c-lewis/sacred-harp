@@ -1,4 +1,4 @@
-lib/*
+lib/music21/*
 
 # PyCharm files
 **/.idea/*
@@ -19,7 +19,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/
