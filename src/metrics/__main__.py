@@ -1,14 +1,17 @@
 import logging
 import sys
-import src.metrics.analyzer as analyzer
+from src.metrics.metrics import Metrics
 
 logLevel = logging.INFO
 output_file = 'out\\analysis.csv'
 
 
 def main(directory_path):
-    result_set = analyzer.analyze_directory(directory_path)
-    analyzer.write_to_csv(result_set, output_file)
+    logging.info("Gathering metrics for directory: " + directory_path)
+    metric_gatherer = Metrics.from_directory(directory_path)
+    logging.info("Writing results to file: " + output_file)
+    with open(output_file, "w") as file:
+        file.write(metric_gatherer.to_csv())
 
 
 if __name__ == '__main__':
