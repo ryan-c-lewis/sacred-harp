@@ -48,13 +48,13 @@ class MetricsNotes:
         metrics = []
         for song in sorted(self.songs, key=lambda x: x.page_number):
             song_metrics = SongNoteMetrics(song)
-            a = 1
             for part_metrics in song_metrics.part_metrics:
                 metric_output = {
                     'Song': song.page_number,
-                    'Part': part_metrics.part.partName
+                    'Part': part_metrics.part.partName,
+                    'Average Pitch': part_metrics.average_pitch
                 }
-                for midi in range(-25, 26):
+                for midi in range(-20, 21):
                     if midi in part_metrics.note_duration_percents.keys():
                         metric_output[midi] = part_metrics.note_duration_percents[midi]
                     else:
@@ -84,6 +84,24 @@ class SongNoteMetrics:
         for part in song.parts:
             self.part_metrics.append(PartNoteMetrics(part, song.key.tonic.midi))
 
+        # All of the songs need to have either the bass part moved up an octave or the other parts moved down an octave
+        # I'm not sure *why* this is, but this seems like a good heuristic for figuring out which one.
+        tenor_average = next(metrics for metrics in self.part_metrics if metrics.part.partName.lower() == "tenor").average_pitch
+        if tenor_average < 12:
+            bass_part_metrics = \
+                next(metrics for metrics in self.part_metrics if metrics.part.partName.lower() == "bass")
+            for key in reversed(sorted(bass_part_metrics.note_duration_percents.keys())):
+                bass_part_metrics.note_duration_percents[key + 12] = bass_part_metrics.note_duration_percents.pop(key)
+            bass_part_metrics.average_pitch = round(bass_part_metrics.average_pitch + 12, 2)
+
+        else:
+            non_bass_part_metrics = \
+                [metrics for metrics in self.part_metrics if metrics.part.partName.lower() != "bass"]
+            for part_metrics in non_bass_part_metrics:
+                for key in sorted(part_metrics.note_duration_percents.keys()):
+                    part_metrics.note_duration_percents[key - 12] = part_metrics.note_duration_percents.pop(key)
+                part_metrics.average_pitch = round(part_metrics.average_pitch - 12, 2)
+
 
 class PartNoteMetrics:
     def __init__(self, part, tonic_midi):
@@ -100,3 +118,7 @@ class PartNoteMetrics:
         total_duration = sum(note_duration_quarters.values())
         self.note_duration_percents = {key: note_duration_quarters[key] / total_duration for key in
                                        note_duration_quarters.keys()}
+        self.average_pitch = 0
+        for pitch in self.note_duration_percents.keys():
+            self.average_pitch += pitch * self.note_duration_percents[pitch]
+        self.average_pitch = round(self.average_pitch, 2)

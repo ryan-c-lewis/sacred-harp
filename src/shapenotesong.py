@@ -5,12 +5,12 @@ import music21
 class ShapeNoteSong:
     @classmethod
     def from_file_path(cls, file_path):
-        logging.info("Analyzing file: " + file_path)
+        logging.info("Loading file: " + file_path)
         score = music21.converter.parse(file_path)
         return cls(score)
 
     def __init__(self, score):
-        logging.debug("Creating AnalyzerResult out of score: " + str(score))
+        logging.debug("Creating ShpeNoteSong from music21 score: " + str(score))
         self.score = score
         self.raw_title = score.metadata.title
         self.composer = score.metadata.composer
