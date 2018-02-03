@@ -5,7 +5,7 @@ import os
 from src.shapenotesong import ShapeNoteSong
 
 
-class Metrics:
+class MetricsGeneral:
     @classmethod
     def from_directory(cls, directory_path, max_num_files=0):
         logging.info("Analyzing files at: " + directory_path)
@@ -49,6 +49,11 @@ class Metrics:
                 'RangeEnd': result.range.noteEnd
             })
         return metrics
+
+    def to_file(self, file_path):
+        logging.info("Writing results to file: " + file_path)
+        with open(file_path, "w") as file:
+            file.write(self.to_csv())
 
     def to_csv(self):
         logging.debug("Converting AnalyzerResultSet to CSV")

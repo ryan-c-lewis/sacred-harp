@@ -1,10 +1,10 @@
 import unittest
-from src.metrics.metrics import Metrics
+from src.metrics.metrics_general import MetricsGeneral
 
 
 class TestMetrics(unittest.TestCase):
     def test_results_to_csv(self):
-        metrics = Metrics.from_files([
+        metrics = MetricsGeneral.from_files([
             "..\\lib\\books\\denson\\124.xml",
             "..\\lib\\books\\denson\\47b.xml"
         ])
