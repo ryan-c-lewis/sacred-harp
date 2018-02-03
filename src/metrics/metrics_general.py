@@ -52,11 +52,11 @@ class MetricsGeneral:
 
     def to_file(self, file_path):
         logging.info("Writing results to file: " + file_path)
-        with open(file_path, "w") as file:
+        with open(file_path, "w", newline="") as file:
             file.write(self.to_csv())
 
     def to_csv(self):
-        logging.debug("Converting AnalyzerResultSet to CSV")
+        logging.debug("Converting metrics to CSV")
         metrics = self.gather_metrics()
         output = io.StringIO()
         writer = csv.DictWriter(output, metrics[0].keys())
