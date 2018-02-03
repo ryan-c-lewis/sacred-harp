@@ -8,6 +8,10 @@ from src.shapenotesong import ShapeNoteSong
 # TODO: Some outputs are shifted up an octave too high.
 # Need to figure out how to tell when that's happening and shift them down.
 
+# The output numbers are percentages of note duration for each half-step relative to the tonic.
+# So if the song's tonic is C4 and 10 of 50 of the treble's quarter notes are an E4,
+# then the number 4 (4th half-step above tonic) for the treble will be 0.20 (10 / 50)
+
 
 class MetricsNotes:
     @classmethod
@@ -70,10 +74,7 @@ class MetricsNotes:
         writer = csv.DictWriter(output, metrics[0].keys())
         writer.writeheader()
         writer.writerows(metrics)
-        return "These numbers are percentages of note duration for each half-step relative to the tonic.\n"\
-               "So if the song's tonic is C4 and 10 of 50 of the treble's quarter notes are an E4,\n"\
-               "then the number 4 (4th half-step above tonic) for the treble will be 0.20 (10 / 50)\n\n"\
-               + output.getvalue()
+        return output.getvalue()
 
 
 class SongNoteMetrics:
